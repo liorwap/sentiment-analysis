@@ -4,34 +4,30 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.regex.Pattern;
 
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import com.sun.tools.javac.util.Log;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class Handler implements RequestHandler<Map<String, Object>, ApiGatewayResponse> {
 
 	private static final Logger LOG = LogManager.getLogger(Handler.class);
 
-	private long getMaxItemId() throws UnirestException {
-		HttpResponse<String> response =
-				Unirest.get("https://hacker-news.firebaseio.com/v0/maxitem.json?print=pretty")
-						.asString();
-		String body = response.getBody().replace("\n", "");
-		return Long.parseLong(body);
-	}
-
 	private JSONObject getItem(long id) throws UnirestException {
-		String url = String.format("https://hacker-news.firebaseio.com/v0/item/%o.json?print=pretty", id);
+		String url = "https://hacker-news.firebaseio.com/v0/item/" + id + ".json?print=pretty";
 		HttpResponse<JsonNode> jsonResponse = Unirest.get(url).asJson();
 		return jsonResponse.getBody().getObject();
 	}
@@ -40,22 +36,20 @@ public class Handler implements RequestHandler<Map<String, Object>, ApiGatewayRe
 		return Pattern.compile(Pattern.quote(phrase), Pattern.CASE_INSENSITIVE).matcher(title).find();
 	}
 
-	private boolean isStoryWithPhraseInTitle(JSONObject responseObj, String phrase){
-		if(responseObj == null) return false;
-		if(!responseObj.getString("type").equals("story")) return false;
- 		return containsPhraseCaseInsensitive(responseObj.getString("title"), phrase);
-	}
-
-	private List<Long> getStoriesId(String phrase) throws UnirestException {
-		List<Long> idsByTitle = new ArrayList<>();
-		long maxId = getMaxItemId();
-		for(long itemId = 0L; itemId <= maxId; ++itemId){
-			JSONObject responseObj = getItem(itemId);
-			if(isStoryWithPhraseInTitle(responseObj, phrase)){
-				idsByTitle.add(itemId);
+	private List<Integer> getTopStoriesWithPhraseInTitle(String phrase) throws UnirestException {
+		List<Integer> topStoriesWithPhraseInTitle = new ArrayList<>();
+		String topStoriesUrl = "https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty";
+		HttpResponse<JsonNode> jsonResponse = Unirest.get(topStoriesUrl).asJson();
+		JSONArray jsonArray = jsonResponse.getBody().getArray();
+		for(int i = 0; i < jsonArray.length(); ++i){
+			int storyId = (int) jsonArray.get(i);
+			JSONObject story = getItem(storyId);
+			String title = story.getString("title");
+			if(containsPhraseCaseInsensitive(title, phrase)){
+				topStoriesWithPhraseInTitle.add(storyId);
 			}
 		}
-		return idsByTitle;
+		return topStoriesWithPhraseInTitle;
 	}
 	@Override
 	public ApiGatewayResponse handleRequest(Map<String, Object> input, Context context) {
@@ -63,10 +57,8 @@ public class Handler implements RequestHandler<Map<String, Object>, ApiGatewayRe
 		try{
 			Map<String,String> pathParameters =  (Map<String,String>) input.get("pathParameters");
 			String phrase = pathParameters.get("phrase");
-			List<Long> storiesId = getStoriesId(phrase);
-			for(long storyId: storiesId){
-				LOG.info(storyId);
-			}
+			List<Integer> topStoriesWithPhraseInTitle = getTopStoriesWithPhraseInTitle(phrase);
+
 			Response responseBody = new Response("Success: " + phrase, input);
 			return ApiGatewayResponse.builder()
 					.setStatusCode(200)
