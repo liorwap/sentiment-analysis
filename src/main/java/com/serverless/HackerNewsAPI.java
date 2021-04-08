@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class HackerNewsAPI {
+class HackerNewsAPI {
     private static final String BASE_URL_API = "https://hacker-news.firebaseio.com/v0";
     private static final String EXTENSION_URL_API = ".json?print=pretty";
 
@@ -19,12 +19,12 @@ public class HackerNewsAPI {
         return Pattern.compile(Pattern.quote(phrase), Pattern.CASE_INSENSITIVE).matcher(title).find();
     }
 
-    public static JSONObject getItem(long id) throws UnirestException {
+    static JSONObject getItem(long id) throws UnirestException {
         String url = BASE_URL_API + "/item/" + id + EXTENSION_URL_API;
         HttpResponse<JsonNode> jsonResponse = Unirest.get(url).asJson();
         return jsonResponse.getBody().getObject();
     }
-    public static List<Integer> getTopStoriesWithPhraseInTitle(String phrase) throws UnirestException {
+    static List<Integer> getTopStoriesWithPhraseInTitle(String phrase) throws UnirestException {
         List<Integer> topStoriesWithPhraseInTitle = new ArrayList<>();
         String topStoriesUrl = BASE_URL_API + "/topstories" + EXTENSION_URL_API;
         HttpResponse<JsonNode> jsonResponse = Unirest.get(topStoriesUrl).asJson();
@@ -43,13 +43,13 @@ public class HackerNewsAPI {
     /*
      must contain storyId or commentId
      */
-    public static JSONArray getItemComments(int itemId) throws UnirestException {
+    static JSONArray getItemComments(int itemId) throws UnirestException {
         String storyUrl = BASE_URL_API + "/item/" + itemId + EXTENSION_URL_API;
         HttpResponse<JsonNode> jsonResponse = Unirest.get(storyUrl).asJson();
         JSONObject jsonObjResponse = jsonResponse.getBody().getObject();
         return jsonObjResponse.getJSONArray("kids");
     }
-    public static String getCommentText(int commentId) throws UnirestException {
+    static String getCommentText(int commentId) throws UnirestException {
         String commentUrl = BASE_URL_API + "/item/" + commentId + EXTENSION_URL_API;
         HttpResponse<JsonNode> jsonResponse = Unirest.get(commentUrl).asJson();
         JSONObject jsonObjResponse = jsonResponse.getBody().getObject();

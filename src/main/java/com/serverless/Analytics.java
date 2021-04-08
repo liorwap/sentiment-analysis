@@ -2,32 +2,20 @@ package com.serverless;
 
 import org.json.JSONObject;
 
-public class Analytics {
+class Analytics {
     private final String POSITIVE = "positive";
     private final String NEUTRAL = "neutral";
     private final String NEGATIVE = "negative";
     private final String MIXED = "mixed";
     private final String[] attributes = {POSITIVE, NEUTRAL, NEGATIVE, MIXED};
+    private int numOfCallsToUpdate = 0;
+    private AverageKeeper[] averages = new AverageKeeper[attributes.length];
+    private MedianKeeper[] medians = new MedianKeeper[attributes.length];
+
     private final double ratioEpsilon = 0.05;
-    private JSONObject results;
 
-    public Analytics(){
-        this.results = buildAnalyticsSchemeTemplate();
-    }
-
-    private JSONObject buildAnalyticsSchemeTemplate(){
-        JSONObject analyticsScheme = new JSONObject();
-        analyticsScheme.put("comments", 0);
-        for(String attribute: attributes) {
-            JSONObject resultHolder = new JSONObject();
-            resultHolder.put("avg", 0.0);
-            resultHolder.put("median", 0.0);
-            analyticsScheme.put(attribute, resultHolder);
-        }
-        return analyticsScheme;
-    }
-
-    public void update(String attribute, double ratio, double value){
+    void update(String attribute, double ratio, double value){
+        numOfCallsToUpdate++;
         if(attribute.equals(NEUTRAL) && Math.abs(ratio) <= ratioEpsilon){
             attribute = MIXED;
         }
@@ -49,25 +37,36 @@ public class Analytics {
         }
     }
 
-    private void updateMixed(double value) {
-
-    }
-
-    private void updateNegative(double value) {
-
+    private void updatePositive(double value) {
+        averages[0].add(value);
+        medians[0].add(value);
     }
 
     private void updateNeutral(double value) {
-
+        averages[1].add(value);
+        medians[1].add(value);
     }
 
-    private void updatePositive(double value) {
-
+    private void updateNegative(double value) {
+        averages[2].add(value);
+        medians[2].add(value);
     }
 
-    public JSONObject getResults() {
-        return results;
+    private void updateMixed(double value) {
+        averages[3].add(value);
+        medians[3].add(value);
     }
 
-
+    JSONObject getResults() {
+        JSONObject analyticsScheme = new JSONObject();
+        analyticsScheme.put("comments", numOfCallsToUpdate);
+        int i = 0;
+        for(String attribute: attributes) {
+            JSONObject resultHolder = new JSONObject();
+            resultHolder.put("avg", averages[i].get());
+            resultHolder.put("median", medians[i].get());
+            analyticsScheme.put(attribute, resultHolder);
+            ++i;
+        }
+        return analyticsScheme;}
 }
