@@ -49,16 +49,18 @@ public class ProcessStoriesByPhrase implements RequestHandler<Map<String, Object
 			List<Integer> topStoriesWithPhraseInTitle = HackerNewsAPI.getTopStoriesWithPhraseInTitle(phrase);
 			analyzeStories(topStoriesWithPhraseInTitle);
 
+		} catch (Exception ex){
+			LOG.error("error with path parameters: " + ex);
+		}
+		if(analyzer.alreadyAccumulatedResult()){
 			return ApiGatewayResponse.builder()
 					.setStatusCode(200)
 					.setRawBody(analyzer.getResults().toString())
 					.build();
-		} catch (Exception ex){
-			LOG.error("error with path parameters: " + ex);
+		} else {
+			return ApiGatewayResponse.builder()
+					.setStatusCode(416)
+					.build();
 		}
-		return ApiGatewayResponse.builder()
-				.setStatusCode(416)
-				.setRawBody(analyzer.getResults().toString())
-				.build();
 	}
 }

@@ -23,6 +23,9 @@ class Analytics {
             medians[i] = new MedianKeeper();
         }
     }
+    boolean alreadyAccumulatedResult(){
+        return numOfCallsToUpdate > 0;
+    }
     /*
     ratioEpsilon used here, it is the threshold of deciding if a neutral text is actually contains
     about the same amount of both positive and negative keywords.
