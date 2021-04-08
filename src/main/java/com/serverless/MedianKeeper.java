@@ -6,9 +6,9 @@ import java.util.Queue;
 class MedianKeeper implements StreamAlgorithm{
     private Queue<Double> minHeap, maxHeap;
 
-    public MedianKeeper(Queue<Double> minHeap, Queue<Double> maxHeap) {
-        this.minHeap = minHeap;
-        this.maxHeap = maxHeap;
+    public MedianKeeper() {
+        this.minHeap = new PriorityQueue<>();
+        this.maxHeap = new PriorityQueue<>();
     }
     @Override
     public void add(double num){

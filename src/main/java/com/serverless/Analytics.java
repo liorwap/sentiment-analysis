@@ -14,8 +14,16 @@ class Analytics {
 
     private final double ratioEpsilon = 0.05;
 
+    public Analytics() {
+        for(int i = 0; i < attributes.length; ++i){
+            averages[i] = new AverageKeeper();
+            medians[i] = new MedianKeeper();
+        }
+    }
+
     void update(String attribute, double ratio, double value){
         numOfCallsToUpdate++;
+        value = Math.abs(value);
         if(attribute.equals(NEUTRAL) && Math.abs(ratio) <= ratioEpsilon){
             attribute = MIXED;
         }

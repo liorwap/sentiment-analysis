@@ -47,13 +47,13 @@ class HackerNewsAPI {
         String storyUrl = BASE_URL_API + "/item/" + itemId + EXTENSION_URL_API;
         HttpResponse<JsonNode> jsonResponse = Unirest.get(storyUrl).asJson();
         JSONObject jsonObjResponse = jsonResponse.getBody().getObject();
-        return jsonObjResponse.getJSONArray("kids");
+        return jsonObjResponse.has("kids") ? jsonObjResponse.getJSONArray("kids") : null;
     }
     static String getCommentText(int commentId) throws UnirestException {
         String commentUrl = BASE_URL_API + "/item/" + commentId + EXTENSION_URL_API;
         HttpResponse<JsonNode> jsonResponse = Unirest.get(commentUrl).asJson();
         JSONObject jsonObjResponse = jsonResponse.getBody().getObject();
-        return jsonObjResponse.getString("text");
+        return jsonObjResponse.has("text") ? jsonObjResponse.getString("text") : null;
 
     }
 }

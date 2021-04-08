@@ -1,14 +1,8 @@
 package com.serverless;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
-
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,7 +10,6 @@ import org.apache.logging.log4j.Logger;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 public class ProcessStoriesByPhrase implements RequestHandler<Map<String, Object>, ApiGatewayResponse> {
 
@@ -53,17 +46,12 @@ public class ProcessStoriesByPhrase implements RequestHandler<Map<String, Object
 		try{
 			Map<String,String> pathParameters =  (Map<String,String>) input.get("pathParameters");
 			String phrase = pathParameters.get("phrase");
-//			List<Integer> topStoriesWithPhraseInTitle = HackerNewsAPI.getTopStoriesWithPhraseInTitle(phrase);
-			List<Integer> topStoriesWithPhraseInTitle = new ArrayList<>();
-			topStoriesWithPhraseInTitle.add(8863);
+			List<Integer> topStoriesWithPhraseInTitle = HackerNewsAPI.getTopStoriesWithPhraseInTitle(phrase);
 			analyzeStories(topStoriesWithPhraseInTitle);
 
-//			Response responseBody = new Response("Success: " + phrase, input);
 			return ApiGatewayResponse.builder()
 					.setStatusCode(200)
 					.setRawBody(analyzer.getResults().toString())
-//					.setObjectBody(responseBody)
-					.setHeaders(Collections.singletonMap("Sentiment-Analysis-Powered-By", "AWS Lambda & serverless"))
 					.build();
 		} catch (Exception ex){
 			LOG.error("error with path parameters: " + ex);
@@ -71,7 +59,6 @@ public class ProcessStoriesByPhrase implements RequestHandler<Map<String, Object
 		return ApiGatewayResponse.builder()
 				.setStatusCode(416)
 				.setRawBody(analyzer.getResults().toString())
-				.setHeaders(Collections.singletonMap("Sentiment-Analysis-Powered-By", "AWS Lambda & serverless"))
 				.build();
 	}
 }
