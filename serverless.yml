@@ -55,7 +55,7 @@ package:
 
 functions:
   sentiment:
-    handler: com.serverless.Handler
+    handler: com.serverless.ProcessStoriesByPhrase
     events:
       - httpApi:
           path: /sentiment
