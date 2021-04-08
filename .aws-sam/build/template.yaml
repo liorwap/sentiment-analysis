@@ -4,6 +4,6 @@ Resources:
     Properties:
       Timeout: 300
       MemorySize: 4992
-      Handler: com.serverless.Handler
+      Handler: com.serverless.ProcessStoriesByPhrase
       CodeUri: Function
       Runtime: java8
