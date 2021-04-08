@@ -175,7 +175,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/hacker-news-sentiment-analysis-api/dev/1617702572331-2021-04-06T09:49:32.331Z/target/sentiment-dev.jar"
+                "S3Key": "serverless/hacker-news-sentiment-analysis-api/dev/1617896465344-2021-04-08T15:41:05.344Z/target/sentiment-dev.jar"
               },
               "Handler": "com.serverless.Handler",
               "Runtime": "java8",
@@ -193,14 +193,14 @@
               "SentimentLogGroup"
             ]
           },
-          "SentimentLambdaVersionZfGkDXGyu5l4U9m6i2YvMTkGNsI4FTMKMmqBVLoeo": {
+          "SentimentLambdaVersionrf1fC4TeajvQU1UCU9ETKnR0Wy8U2MmjOj6vSklIsU": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "SentimentLambdaFunction"
               },
-              "CodeSha256": "ZXgMjM2EvUxYjB11G2R41rRdIifopbcteEKXCgkBKpQ="
+              "CodeSha256": "YvqiejVo2cT6I3aUSBzIT2aKcUcaDCDh+VWBH2LRmGM="
             }
           },
           "HttpApi": {
@@ -305,7 +305,7 @@
           "SentimentLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "SentimentLambdaVersionZfGkDXGyu5l4U9m6i2YvMTkGNsI4FTMKMmqBVLoeo"
+              "Ref": "SentimentLambdaVersionrf1fC4TeajvQU1UCU9ETKnR0Wy8U2MmjOj6vSklIsU"
             }
           },
           "HttpApiId": {
@@ -442,7 +442,7 @@
         "timeout": 6,
         "runtime": "java8",
         "vpc": {},
-        "versionLogicalId": "SentimentLambdaVersionZfGkDXGyu5l4U9m6i2YvMTkGNsI4FTMKMmqBVLoeo"
+        "versionLogicalId": "SentimentLambdaVersionrf1fC4TeajvQU1UCU9ETKnR0Wy8U2MmjOj6vSklIsU"
       }
     },
     "configValidationMode": "warn",
@@ -458,7 +458,7 @@
       },
       "package": {
         "artifact": "target/sentiment-dev.jar",
-        "artifactDirectoryName": "serverless/hacker-news-sentiment-analysis-api/dev/1617702572331-2021-04-06T09:49:32.331Z"
+        "artifactDirectoryName": "serverless/hacker-news-sentiment-analysis-api/dev/1617896465344-2021-04-08T15:41:05.344Z"
       },
       "functions": {
         "$ref": "$[\"service\"][\"functions\"]"
@@ -467,7 +467,7 @@
     "isDashboardMonitoringPreconfigured": false
   },
   "package": {
-    "artifactDirectoryName": "serverless/hacker-news-sentiment-analysis-api/dev/1617702572331-2021-04-06T09:49:32.331Z",
+    "artifactDirectoryName": "serverless/hacker-news-sentiment-analysis-api/dev/1617896465344-2021-04-08T15:41:05.344Z",
     "artifact": "target/sentiment-dev.jar"
   }
 }

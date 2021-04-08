@@ -2,6 +2,9 @@ package com.serverless;
 
 import org.json.JSONObject;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 class Analytics {
     private final String POSITIVE = "positive";
     private final String NEUTRAL = "neutral";
@@ -9,8 +12,8 @@ class Analytics {
     private final String MIXED = "mixed";
     private final String[] attributes = {POSITIVE, NEUTRAL, NEGATIVE, MIXED};
     private int numOfCallsToUpdate = 0;
-    private AverageKeeper[] averages = new AverageKeeper[attributes.length];
-    private MedianKeeper[] medians = new MedianKeeper[attributes.length];
+    private final AverageKeeper[] averages = new AverageKeeper[attributes.length];
+    private final MedianKeeper[] medians = new MedianKeeper[attributes.length];
 
     private final double ratioEpsilon = 0.05;
 
@@ -20,11 +23,14 @@ class Analytics {
             medians[i] = new MedianKeeper();
         }
     }
-
+    /*
+    ratioEpsilon used here, it is the threshold of deciding if a neutral text is actually contains
+    about the same amount of both positive and negative keywords.
+     */
     void update(String attribute, double ratio, double value){
         numOfCallsToUpdate++;
         value = Math.abs(value);
-        if(attribute.equals(NEUTRAL) && Math.abs(ratio) <= ratioEpsilon){
+        if(attribute.equals(NEUTRAL) && Math.abs(1 - ratio) <= ratioEpsilon){
             attribute = MIXED;
         }
         switch (attribute){
@@ -71,8 +77,10 @@ class Analytics {
         int i = 0;
         for(String attribute: attributes) {
             JSONObject resultHolder = new JSONObject();
-            resultHolder.put("avg", averages[i].get());
-            resultHolder.put("median", medians[i].get());
+            BigDecimal average = BigDecimal.valueOf(averages[i].get()).setScale(2, RoundingMode.HALF_UP);
+            BigDecimal median = BigDecimal.valueOf(medians[i].get()).setScale(2, RoundingMode.HALF_UP);
+            resultHolder.put("avg", average.doubleValue());
+            resultHolder.put("median", median);
             analyticsScheme.put(attribute, resultHolder);
             ++i;
         }
