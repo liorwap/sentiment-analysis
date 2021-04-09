@@ -1,8 +1,8 @@
 {
   "service": {
-    "service": "hacker-news-sentiment-analysis-api",
+    "service": "sentiment",
     "serviceObject": {
-      "name": "hacker-news-sentiment-analysis-api"
+      "name": "sentiment"
     },
     "provider": {
       "name": "aws",
@@ -88,7 +88,7 @@
           "SentimentLogGroup": {
             "Type": "AWS::Logs::LogGroup",
             "Properties": {
-              "LogGroupName": "/aws/lambda/hacker-news-sentiment-analysis-api-dev-sentiment"
+              "LogGroupName": "/aws/lambda/sentiment-dev-sentiment"
             }
           },
           "IamRoleLambdaExecution": {
@@ -116,7 +116,7 @@
                     "Fn::Join": [
                       "-",
                       [
-                        "hacker-news-sentiment-analysis-api",
+                        "sentiment",
                         "dev",
                         "lambda"
                       ]
@@ -133,7 +133,7 @@
                         ],
                         "Resource": [
                           {
-                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/hacker-news-sentiment-analysis-api-dev*:*"
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/sentiment-dev*:*"
                           }
                         ]
                       },
@@ -144,7 +144,7 @@
                         ],
                         "Resource": [
                           {
-                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/hacker-news-sentiment-analysis-api-dev*:*:*"
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/sentiment-dev*:*:*"
                           }
                         ]
                       }
@@ -157,7 +157,7 @@
                 "Fn::Join": [
                   "-",
                   [
-                    "hacker-news-sentiment-analysis-api",
+                    "sentiment",
                     "dev",
                     {
                       "Ref": "AWS::Region"
@@ -175,11 +175,11 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/hacker-news-sentiment-analysis-api/dev/1617897701945-2021-04-08T16:01:41.945Z/target/sentiment-dev.jar"
+                "S3Key": "serverless/sentiment/dev/1617901954249-2021-04-08T17:12:34.249Z/target/sentiment-dev.jar"
               },
-              "Handler": "com.serverless.Handler",
+              "Handler": "com.serverless.ProcessStoriesByPhrase",
               "Runtime": "java8",
-              "FunctionName": "hacker-news-sentiment-analysis-api-dev-sentiment",
+              "FunctionName": "sentiment-dev-sentiment",
               "MemorySize": 1024,
               "Timeout": 6,
               "Role": {
@@ -193,20 +193,20 @@
               "SentimentLogGroup"
             ]
           },
-          "SentimentLambdaVersionrf1fC4TeajvQU1UCU9ETKnR0Wy8U2MmjOj6vSklIsU": {
+          "SentimentLambdaVersion4GpC0U2EN1Jzhev7caDYCmWtr0V1jkKWZML0BaD3AeE": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "SentimentLambdaFunction"
               },
-              "CodeSha256": "YvqiejVo2cT6I3aUSBzIT2aKcUcaDCDh+VWBH2LRmGM="
+              "CodeSha256": "UcQxFH/4EQcBoeY0psKizWPxLK+hcTP2j1/CuWxwblQ="
             }
           },
           "HttpApi": {
             "Type": "AWS::ApiGatewayV2::Api",
             "Properties": {
-              "Name": "dev-hacker-news-sentiment-analysis-api",
+              "Name": "dev-sentiment",
               "ProtocolType": "HTTP"
             }
           },
@@ -305,7 +305,7 @@
           "SentimentLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "SentimentLambdaVersionrf1fC4TeajvQU1UCU9ETKnR0Wy8U2MmjOj6vSklIsU"
+              "Ref": "SentimentLambdaVersion4GpC0U2EN1Jzhev7caDYCmWtr0V1jkKWZML0BaD3AeE"
             }
           },
           "HttpApiId": {
@@ -425,7 +425,7 @@
     "pluginsData": {},
     "functions": {
       "sentiment": {
-        "handler": "com.serverless.Handler",
+        "handler": "com.serverless.ProcessStoriesByPhrase",
         "events": [
           {
             "httpApi": {
@@ -436,13 +436,13 @@
             "resolvedPath": "/sentiment"
           }
         ],
-        "name": "hacker-news-sentiment-analysis-api-dev-sentiment",
+        "name": "sentiment-dev-sentiment",
         "package": {},
         "memory": 1024,
         "timeout": 6,
         "runtime": "java8",
         "vpc": {},
-        "versionLogicalId": "SentimentLambdaVersionrf1fC4TeajvQU1UCU9ETKnR0Wy8U2MmjOj6vSklIsU"
+        "versionLogicalId": "SentimentLambdaVersion4GpC0U2EN1Jzhev7caDYCmWtr0V1jkKWZML0BaD3AeE"
       }
     },
     "configValidationMode": "warn",
@@ -458,7 +458,7 @@
       },
       "package": {
         "artifact": "target/sentiment-dev.jar",
-        "artifactDirectoryName": "serverless/hacker-news-sentiment-analysis-api/dev/1617897701945-2021-04-08T16:01:41.945Z"
+        "artifactDirectoryName": "serverless/sentiment/dev/1617901954249-2021-04-08T17:12:34.249Z"
       },
       "functions": {
         "$ref": "$[\"service\"][\"functions\"]"
@@ -467,7 +467,7 @@
     "isDashboardMonitoringPreconfigured": false
   },
   "package": {
-    "artifactDirectoryName": "serverless/hacker-news-sentiment-analysis-api/dev/1617897701945-2021-04-08T16:01:41.945Z",
+    "artifactDirectoryName": "serverless/sentiment/dev/1617901954249-2021-04-08T17:12:34.249Z",
     "artifact": "target/sentiment-dev.jar"
   }
 }

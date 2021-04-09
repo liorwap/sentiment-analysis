@@ -44,8 +44,8 @@ public class ProcessStoriesByPhrase implements RequestHandler<Map<String, Object
 	public ApiGatewayResponse handleRequest(Map<String, Object> input, Context context) {
 		LOG.info("received: {}", input);
 		try{
-			Map<String,String> pathParameters =  (Map<String,String>) input.get("pathParameters");
-			String phrase = pathParameters.get("phrase");
+			Map<String,String> quarryParameters =  (Map<String,String>) input.get("queryStringParameters");
+			String phrase = quarryParameters.get("phrase");
 			List<Integer> topStoriesWithPhraseInTitle = HackerNewsAPI.getTopStoriesWithPhraseInTitle(phrase);
 			analyzeStories(topStoriesWithPhraseInTitle);
 
