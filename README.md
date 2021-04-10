@@ -10,3 +10,11 @@ Jackson package to easily manipulate and access JSON objects.
 
 Unirest package to interact with other API's.
 
+Tools used during development:
+
+Docker container for creating image for local development.
+
+Postman for sending GET requests.
+
+Intellij IDEA.
+
