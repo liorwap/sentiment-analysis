@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -30,7 +31,7 @@ class HackerNewsAPI {
         HttpResponse<JsonNode> jsonResponse = Unirest.get(topStoriesUrl).asJson();
         return jsonResponse.getBody().getArray();
     }
-    static List<Integer> asyncGetTopStoriesWithPhraseInTitle(String phrase) throws UnirestException, InterruptedException {
+    static List<Integer> asyncGetTopStoriesWithPhraseInTitle(String phrase) throws UnirestException, InterruptedException, IOException {
         JSONArray topStories = getTopStories();
         List<Integer> topStoriesWithPhraseInTitle = new ArrayList<>();
         CountDownLatch responseWaiter = new CountDownLatch(topStories.length());
@@ -103,5 +104,82 @@ class HackerNewsAPI {
         JSONObject jsonObjResponse = jsonResponse.getBody().getObject();
         return jsonObjResponse.has("text") ? jsonObjResponse.getString("text") : null;
 
+    }
+
+    static List<JSONArray> asyncGetItemsComments(JSONArray storiesToAnalyze) throws InterruptedException{
+        List<Integer> storiesToAnalyzeArray = new ArrayList<>();
+        for(int i = 0; i < storiesToAnalyze.length(); ++i){
+            storiesToAnalyzeArray.add(storiesToAnalyze.getInt(i));
+        }
+        return asyncGetItemsComments(storiesToAnalyzeArray);
+    }
+
+    static List<JSONArray> asyncGetItemsComments(List<Integer> storiesToAnalyze) throws InterruptedException {
+        LOG.info("getting top level comments of stories async");
+        List<JSONArray> itemsComments = new ArrayList<>();
+        CountDownLatch responseWaiter = new CountDownLatch(storiesToAnalyze.size());
+        for(int storyId: storiesToAnalyze){
+            LOG.info("sending http request for comments from storyId : {}", storyId);
+            String storyUrl = BASE_URL_API + "/item/" + storyId + EXTENSION_URL_API;
+            Future<HttpResponse<JsonNode>> jsonResponse = Unirest.get(storyUrl).asJsonAsync(new Callback<JsonNode>() {
+                @Override
+                public void completed(HttpResponse<JsonNode> httpResponse) {
+                    JSONObject jsonObjResponse = httpResponse.getBody().getObject();
+                    if(jsonObjResponse.has("kids")){
+                        itemsComments.add(jsonObjResponse.getJSONArray("kids"));
+                        LOG.info("added comments of storyId: {}, comments are: {}",storyId, jsonObjResponse.getJSONArray("kids"));
+                    }
+                    responseWaiter.countDown();
+                }
+
+                @Override
+                public void failed(UnirestException e) {
+                    responseWaiter.countDown();
+                }
+
+                @Override
+                public void cancelled() {
+                    responseWaiter.countDown();
+                }
+            });
+
+        }
+        responseWaiter.await();
+        return itemsComments;
+    }
+
+    public static List<String> asyncGetCommentsTexts(JSONArray comments) throws InterruptedException {
+        LOG.info("getting comments texts");
+        List<String> commentsTexts = new ArrayList<>();
+        CountDownLatch responseWaiter = new CountDownLatch(comments.length());
+        for(int i = 0; i < comments.length(); ++i){
+            int commentId = comments.getInt(i);
+            String commentUrl = BASE_URL_API + "/item/" + commentId + EXTENSION_URL_API;
+            Future<HttpResponse<JsonNode>> jsonResponse = Unirest.get(commentUrl).asJsonAsync(new Callback<JsonNode>() {
+                @Override
+                public void completed(HttpResponse<JsonNode> httpResponse) {
+                    JSONObject jsonObjResponse = httpResponse.getBody().getObject();
+                    if(jsonObjResponse.has("text")){
+                        String text = jsonObjResponse.getString("text");
+                        LOG.info("got comment text: {}", text);
+                        commentsTexts.add(text);
+                    }
+                    responseWaiter.countDown();
+                }
+
+                @Override
+                public void failed(UnirestException e) {
+                    responseWaiter.countDown();
+
+                }
+
+                @Override
+                public void cancelled() {
+                    responseWaiter.countDown();
+                }
+            });
+        }
+        responseWaiter.await();
+        return commentsTexts;
     }
 }

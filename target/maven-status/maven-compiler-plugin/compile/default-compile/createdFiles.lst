@@ -1,10 +1,15 @@
 com\serverless\SentimentAnalysisAPI.class
 com\serverless\ApiGatewayResponse$Builder.class
 com\serverless\Response.class
+com\serverless\SentimentAnalysisAPI$Analysis.class
 com\serverless\ProcessStoriesByPhrase.class
 com\serverless\ApiGatewayResponse.class
-com\serverless\Analytics.class
-com\serverless\HackerNewsAPI.class
 com\serverless\MedianKeeper.class
 com\serverless\AverageKeeper.class
+com\serverless\HackerNewsAPI$3.class
+com\serverless\HackerNewsAPI$2.class
+com\serverless\Analytics.class
+com\serverless\HackerNewsAPI.class
+com\serverless\HackerNewsAPI$1.class
 com\serverless\StreamAlgorithm.class
+com\serverless\SentimentAnalysisAPI$1.class

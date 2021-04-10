@@ -175,7 +175,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/sentiment/dev/1617975192260-2021-04-09T13:33:12.260Z/target/aws-java-hacker-news-sentiment-analysis-api-dev.jar"
+                "S3Key": "serverless/sentiment/dev/1618061559201-2021-04-10T13:32:39.201Z/target/sentiment-dev.jar"
               },
               "Handler": "com.serverless.ProcessStoriesByPhrase",
               "Runtime": "java8",
@@ -193,14 +193,14 @@
               "SentimentLogGroup"
             ]
           },
-          "SentimentLambdaVersionfyzqM4JFn5nfFNNHBrhwTMq40ZCrB4hBELZeVKBmY": {
+          "SentimentLambdaVersionyu0BqQ4wdGyh8U4n9nv2q5tybYwp4kn2aL0FJRec": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "SentimentLambdaFunction"
               },
-              "CodeSha256": "2kbuGrohDU6hROtN7skiOX9G6S6Z2nNoinuAIkqB770="
+              "CodeSha256": "+EOC9FW38+yEXS/ihCiQZ7rJVUQfF3ZHUq1fjZVZFHQ="
             }
           },
           "ApiGatewayRestApi": {
@@ -275,7 +275,7 @@
               "MethodResponses": []
             }
           },
-          "ApiGatewayDeployment1617975188847": {
+          "ApiGatewayDeployment1618061555202": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
@@ -334,7 +334,7 @@
           "SentimentLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "SentimentLambdaVersionfyzqM4JFn5nfFNNHBrhwTMq40ZCrB4hBELZeVKBmY"
+              "Ref": "SentimentLambdaVersionyu0BqQ4wdGyh8U4n9nv2q5tybYwp4kn2aL0FJRec"
             }
           },
           "ServiceEndpoint": {
@@ -470,7 +470,7 @@
         "memory": 1024,
         "runtime": "java8",
         "vpc": {},
-        "versionLogicalId": "SentimentLambdaVersionfyzqM4JFn5nfFNNHBrhwTMq40ZCrB4hBELZeVKBmY"
+        "versionLogicalId": "SentimentLambdaVersionyu0BqQ4wdGyh8U4n9nv2q5tybYwp4kn2aL0FJRec"
       }
     },
     "configValidationMode": "warn",
@@ -485,8 +485,8 @@
         "$ref": "$[\"service\"][\"provider\"]"
       },
       "package": {
-        "artifact": "target/aws-java-hacker-news-sentiment-analysis-api-dev.jar",
-        "artifactDirectoryName": "serverless/sentiment/dev/1617975192260-2021-04-09T13:33:12.260Z"
+        "artifact": "target/sentiment-dev.jar",
+        "artifactDirectoryName": "serverless/sentiment/dev/1618061559201-2021-04-10T13:32:39.201Z"
       },
       "functions": {
         "$ref": "$[\"service\"][\"functions\"]"
@@ -495,7 +495,7 @@
     "isDashboardMonitoringPreconfigured": false
   },
   "package": {
-    "artifactDirectoryName": "serverless/sentiment/dev/1617975192260-2021-04-09T13:33:12.260Z",
-    "artifact": "target/aws-java-hacker-news-sentiment-analysis-api-dev.jar"
+    "artifactDirectoryName": "serverless/sentiment/dev/1618061559201-2021-04-10T13:32:39.201Z",
+    "artifact": "target/sentiment-dev.jar"
   }
 }

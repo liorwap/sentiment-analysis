@@ -51,7 +51,7 @@ provider:
 
 # you can add packaging information here
 package:
-  artifact: target/aws-java-hacker-news-sentiment-analysis-api-dev.jar
+  artifact: target/sentiment-dev.jar
 
 functions:
   sentiment:

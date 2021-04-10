@@ -30,24 +30,24 @@ class Analytics {
     ratioEpsilon used here, it is the threshold of deciding if a neutral text is actually contains
     about the same amount of both positive and negative keywords.
      */
-    void update(String attribute, double ratio, double value){
+    void update(String attribute, double ratio, double score){
         numOfCallsToUpdate++;
-        value = Math.abs(value);
+        score = Math.abs(score);
         if(attribute.equals(NEUTRAL) && Math.abs(1 - ratio) <= ratioEpsilon){
             attribute = MIXED;
         }
         switch (attribute){
             case POSITIVE:
-                updatePositive(value);
+                updatePositive(score);
                 break;
             case NEUTRAL:
-                updateNeutral(value);
+                updateNeutral(score);
                 break;
             case NEGATIVE:
-                updateNegative(value);
+                updateNegative(score);
                 break;
             case MIXED:
-                updateMixed(value);
+                updateMixed(score);
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + attribute);
