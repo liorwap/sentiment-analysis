@@ -175,13 +175,13 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/sentiment/dev/1617901954249-2021-04-08T17:12:34.249Z/target/sentiment-dev.jar"
+                "S3Key": "serverless/sentiment/dev/1617975192260-2021-04-09T13:33:12.260Z/target/aws-java-hacker-news-sentiment-analysis-api-dev.jar"
               },
               "Handler": "com.serverless.ProcessStoriesByPhrase",
               "Runtime": "java8",
               "FunctionName": "sentiment-dev-sentiment",
               "MemorySize": 1024,
-              "Timeout": 6,
+              "Timeout": 900,
               "Role": {
                 "Fn::GetAtt": [
                   "IamRoleLambdaExecution",
@@ -193,37 +193,101 @@
               "SentimentLogGroup"
             ]
           },
-          "SentimentLambdaVersion4GpC0U2EN1Jzhev7caDYCmWtr0V1jkKWZML0BaD3AeE": {
+          "SentimentLambdaVersionfyzqM4JFn5nfFNNHBrhwTMq40ZCrB4hBELZeVKBmY": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "SentimentLambdaFunction"
               },
-              "CodeSha256": "UcQxFH/4EQcBoeY0psKizWPxLK+hcTP2j1/CuWxwblQ="
+              "CodeSha256": "2kbuGrohDU6hROtN7skiOX9G6S6Z2nNoinuAIkqB770="
             }
           },
-          "HttpApi": {
-            "Type": "AWS::ApiGatewayV2::Api",
+          "ApiGatewayRestApi": {
+            "Type": "AWS::ApiGateway::RestApi",
             "Properties": {
               "Name": "dev-sentiment",
-              "ProtocolType": "HTTP"
+              "EndpointConfiguration": {
+                "Types": [
+                  "EDGE"
+                ]
+              },
+              "Policy": ""
             }
           },
-          "HttpApiStage": {
-            "Type": "AWS::ApiGatewayV2::Stage",
+          "ApiGatewayResourceSentiment": {
+            "Type": "AWS::ApiGateway::Resource",
             "Properties": {
-              "ApiId": {
-                "Ref": "HttpApi"
+              "ParentId": {
+                "Fn::GetAtt": [
+                  "ApiGatewayRestApi",
+                  "RootResourceId"
+                ]
               },
-              "StageName": "$default",
-              "AutoDeploy": true,
-              "DefaultRouteSettings": {
-                "DetailedMetricsEnabled": false
+              "PathPart": "sentiment",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
               }
             }
           },
-          "SentimentLambdaPermissionHttpApi": {
+          "ApiGatewayMethodSentimentGet": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "GET",
+              "RequestParameters": {
+                "method.request.querystring.phrase": true
+              },
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceSentiment"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "SentimentLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            }
+          },
+          "ApiGatewayDeployment1617975188847": {
+            "Type": "AWS::ApiGateway::Deployment",
+            "Properties": {
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "StageName": "dev"
+            },
+            "DependsOn": [
+              "ApiGatewayMethodSentimentGet"
+            ]
+          },
+          "SentimentLambdaPermissionApiGateway": {
             "Type": "AWS::Lambda::Permission",
             "Properties": {
               "FunctionName": {
@@ -252,48 +316,13 @@
                     },
                     ":",
                     {
-                      "Ref": "HttpApi"
+                      "Ref": "ApiGatewayRestApi"
                     },
-                    "/*"
+                    "/*/*"
                   ]
                 ]
               }
             }
-          },
-          "HttpApiIntegrationSentiment": {
-            "Type": "AWS::ApiGatewayV2::Integration",
-            "Properties": {
-              "ApiId": {
-                "Ref": "HttpApi"
-              },
-              "IntegrationType": "AWS_PROXY",
-              "IntegrationUri": {
-                "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"SentimentLambdaPermissionHttpApi\"][\"Properties\"][\"FunctionName\"]"
-              },
-              "PayloadFormatVersion": "2.0",
-              "TimeoutInMillis": 6500
-            }
-          },
-          "HttpApiRouteGetSentiment": {
-            "Type": "AWS::ApiGatewayV2::Route",
-            "Properties": {
-              "ApiId": {
-                "Ref": "HttpApi"
-              },
-              "RouteKey": "GET /sentiment",
-              "Target": {
-                "Fn::Join": [
-                  "/",
-                  [
-                    "integrations",
-                    {
-                      "Ref": "HttpApiIntegrationSentiment"
-                    }
-                  ]
-                ]
-              }
-            },
-            "DependsOn": "HttpApiIntegrationSentiment"
           }
         },
         "Outputs": {
@@ -305,24 +334,18 @@
           "SentimentLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "SentimentLambdaVersion4GpC0U2EN1Jzhev7caDYCmWtr0V1jkKWZML0BaD3AeE"
+              "Ref": "SentimentLambdaVersionfyzqM4JFn5nfFNNHBrhwTMq40ZCrB4hBELZeVKBmY"
             }
           },
-          "HttpApiId": {
-            "Description": "Id of the HTTP API",
-            "Value": {
-              "Ref": "HttpApi"
-            }
-          },
-          "HttpApiUrl": {
-            "Description": "URL of the HTTP API",
+          "ServiceEndpoint": {
+            "Description": "URL of the service endpoint",
             "Value": {
               "Fn::Join": [
                 "",
                 [
                   "https://",
                   {
-                    "Ref": "HttpApi"
+                    "Ref": "ApiGatewayRestApi"
                   },
                   ".execute-api.",
                   {
@@ -331,7 +354,8 @@
                   ".",
                   {
                     "Ref": "AWS::URLSuffix"
-                  }
+                  },
+                  "/dev"
                 ]
               ]
             }
@@ -428,21 +452,25 @@
         "handler": "com.serverless.ProcessStoriesByPhrase",
         "events": [
           {
-            "httpApi": {
-              "path": "/sentiment",
-              "method": "get"
-            },
-            "resolvedMethod": "GET",
-            "resolvedPath": "/sentiment"
+            "http": {
+              "path": "sentiment",
+              "method": "get",
+              "request": {
+                "parameters": {
+                  "method.request.querystring.phrase": true
+                }
+              },
+              "integration": "AWS_PROXY"
+            }
           }
         ],
+        "timeout": 900,
         "name": "sentiment-dev-sentiment",
         "package": {},
         "memory": 1024,
-        "timeout": 6,
         "runtime": "java8",
         "vpc": {},
-        "versionLogicalId": "SentimentLambdaVersion4GpC0U2EN1Jzhev7caDYCmWtr0V1jkKWZML0BaD3AeE"
+        "versionLogicalId": "SentimentLambdaVersionfyzqM4JFn5nfFNNHBrhwTMq40ZCrB4hBELZeVKBmY"
       }
     },
     "configValidationMode": "warn",
@@ -457,8 +485,8 @@
         "$ref": "$[\"service\"][\"provider\"]"
       },
       "package": {
-        "artifact": "target/sentiment-dev.jar",
-        "artifactDirectoryName": "serverless/sentiment/dev/1617901954249-2021-04-08T17:12:34.249Z"
+        "artifact": "target/aws-java-hacker-news-sentiment-analysis-api-dev.jar",
+        "artifactDirectoryName": "serverless/sentiment/dev/1617975192260-2021-04-09T13:33:12.260Z"
       },
       "functions": {
         "$ref": "$[\"service\"][\"functions\"]"
@@ -467,7 +495,7 @@
     "isDashboardMonitoringPreconfigured": false
   },
   "package": {
-    "artifactDirectoryName": "serverless/sentiment/dev/1617901954249-2021-04-08T17:12:34.249Z",
-    "artifact": "target/sentiment-dev.jar"
+    "artifactDirectoryName": "serverless/sentiment/dev/1617975192260-2021-04-09T13:33:12.260Z",
+    "artifact": "target/aws-java-hacker-news-sentiment-analysis-api-dev.jar"
   }
 }

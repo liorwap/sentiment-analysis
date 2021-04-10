@@ -51,15 +51,20 @@ provider:
 
 # you can add packaging information here
 package:
-  artifact: target/sentiment-dev.jar
+  artifact: target/aws-java-hacker-news-sentiment-analysis-api-dev.jar
 
 functions:
   sentiment:
     handler: com.serverless.ProcessStoriesByPhrase
     events:
-      - httpApi:
-          path: /sentiment
+      - http:
+          path: sentiment
           method: get
+          request:
+            parameters:
+              querystrings:
+                phrase: true
+    timeout: 900
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details

@@ -1,6 +1,7 @@
 package com.serverless;
 
-import java.util.Collections;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import com.mashape.unirest.http.exceptions.UnirestException;
@@ -46,8 +47,15 @@ public class ProcessStoriesByPhrase implements RequestHandler<Map<String, Object
 		try{
 			Map<String,String> quarryParameters =  (Map<String,String>) input.get("queryStringParameters");
 			String phrase = quarryParameters.get("phrase");
-			List<Integer> topStoriesWithPhraseInTitle = HackerNewsAPI.getTopStoriesWithPhraseInTitle(phrase);
+			String decodedPhrase = URLDecoder.decode(phrase, StandardCharsets.UTF_8.toString());
+			LOG.info("decode request: {}", decodedPhrase);
+			LOG.info("start quering HackerNewsAPI..");
+
+			List<Integer> topStoriesWithPhraseInTitle = HackerNewsAPI.asyncGetTopStoriesWithPhraseInTitle(decodedPhrase);
+			LOG.info("start analyze stories");
 			analyzeStories(topStoriesWithPhraseInTitle);
+			LOG.info("finished analyze stories");
+
 
 		} catch (Exception ex){
 			LOG.error("error with path parameters: " + ex);
