@@ -76,18 +76,18 @@ public class ProcessStoriesByPhrase implements RequestHandler<Map<String, Object
 //		}
 //	}
 
-	public static void main(String[] args) throws IOException, InterruptedException, UnirestException {
-		String decodedPhrase = URLDecoder.decode("GRAPH", StandardCharsets.UTF_8.toString());
-		List<Integer> topStoriesWithPhraseInTitle = HackerNewsAPI.asyncGetTopStoriesWithPhraseInTitle(decodedPhrase);
-		LOG.info("start analyze stories");
-		LOG.info("size of topstories: {}", topStoriesWithPhraseInTitle.size());
-		if(!topStoriesWithPhraseInTitle.isEmpty())
-			LOG.info("firststory: {}", topStoriesWithPhraseInTitle.get(0));
-		asyncAnalyzeStories(topStoriesWithPhraseInTitle);
-		LOG.info("finished analyze stories");
-		LOG.info("RESULT IS :L {}", analyzer.getResults().toString());
-		Unirest.shutdown();
-	}
+//	public static void main(String[] args) throws IOException, InterruptedException, UnirestException {
+//		String decodedPhrase = URLDecoder.decode("GRAPH", StandardCharsets.UTF_8.toString());
+//		List<Integer> topStoriesWithPhraseInTitle = HackerNewsAPI.asyncGetTopStoriesWithPhraseInTitle(decodedPhrase);
+//		LOG.info("start analyze stories");
+//		LOG.info("size of topstories: {}", topStoriesWithPhraseInTitle.size());
+//		if(!topStoriesWithPhraseInTitle.isEmpty())
+//			LOG.info("firststory: {}", topStoriesWithPhraseInTitle.get(0));
+//		asyncAnalyzeStories(topStoriesWithPhraseInTitle);
+//		LOG.info("finished analyze stories");
+//		LOG.info("RESULT IS :L {}", analyzer.getResults().toString());
+//		Unirest.shutdown();
+//	}
 	@Override
 	public ApiGatewayResponse handleRequest(Map<String, Object> input, Context context) {
 		LOG.info("received: {}", input);
