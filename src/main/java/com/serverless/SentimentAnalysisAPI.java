@@ -61,16 +61,17 @@ class SentimentAnalysisAPI {
                         .header("Host",
                                 "api.twinword.com")
                         .header("X-Twaip-Key",
-                                "hJv+ZP5tRP6CQdO7qsP9Xgwu8hItC+w8Eqf6zRL3HY9ib57a2m/dDuBWgVo1xzd94I++7DcEsCdMyhZwiTHLIw==")
+                                "KEY")
                         .asJsonAsync(new Callback<JsonNode>() {
                             @Override
                             public void completed(HttpResponse<JsonNode> httpResponse) {
                                 LOG.info("completed analyze text: {}", text);
-                                JSONObject responseBody = httpResponse.getBody().getObject();
-                                String attribute = responseBody.getString("type");
-                                double score = responseBody.optDouble("score");
-                                double ratio = responseBody.optDouble("ratio");
-                                sentimentsAnalysis.add(new Analysis(attribute, ratio, score));
+//                                JSONObject responseBody = httpResponse.getBody().getObject();
+//                                String attribute = responseBody.getString("type");
+//                                double score = responseBody.optDouble("score");
+//                                double ratio = responseBody.optDouble("ratio");
+//                                sentimentsAnalysis.add(new Analysis(attribute, ratio, score));
+                                sentimentsAnalysis.add(new Analysis("positive", 1.0, 0.5));
                                 LOG.info("added text to array of texts");
                                 responseWaiter.countDown();
                             }
@@ -91,6 +92,7 @@ class SentimentAnalysisAPI {
             }
         }
         responseWaiter.await();
+        LOG.info("done all analysis of current batched texts");
         return sentimentsAnalysis;
     }
 }
