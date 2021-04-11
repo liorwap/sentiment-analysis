@@ -1,5 +1,6 @@
 com\serverless\SentimentAnalysisAPI.class
 com\serverless\ApiGatewayResponse$Builder.class
+com\serverless\ProcessStoriesByPhrase$parseComments.class
 com\serverless\Response.class
 com\serverless\SentimentAnalysisAPI$Analysis.class
 com\serverless\ProcessStoriesByPhrase.class

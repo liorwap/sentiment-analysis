@@ -161,13 +161,13 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/sentiment/dev/1618061559201-2021-04-10T13:32:39.201Z/target/sentiment-dev.jar"
+          "S3Key": "serverless/sentiment/dev/1618143425658-2021-04-11T12:17:05.658Z/target/sentiment-dev.jar"
         },
         "Handler": "com.serverless.ProcessStoriesByPhrase",
         "Runtime": "java8",
         "FunctionName": "sentiment-dev-sentiment",
         "MemorySize": 1024,
-        "Timeout": 900,
+        "Timeout": 30,
         "Role": {
           "Fn::GetAtt": [
             "IamRoleLambdaExecution",
@@ -179,14 +179,14 @@
         "SentimentLogGroup"
       ]
     },
-    "SentimentLambdaVersionyu0BqQ4wdGyh8U4n9nv2q5tybYwp4kn2aL0FJRec": {
+    "SentimentLambdaVersionIIz1FgBl5aoZrUNjudbFGRCROFSdQ2ymViyCHzYgI": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "SentimentLambdaFunction"
         },
-        "CodeSha256": "+EOC9FW38+yEXS/ihCiQZ7rJVUQfF3ZHUq1fjZVZFHQ="
+        "CodeSha256": "uKXeegO6TUkjGi4ZOWljY4LAi48NPyFNZA8oyIKR4Go="
       }
     },
     "ApiGatewayRestApi": {
@@ -261,7 +261,7 @@
         "MethodResponses": []
       }
     },
-    "ApiGatewayDeployment1618061555202": {
+    "ApiGatewayDeployment1618143421433": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -320,7 +320,7 @@
     "SentimentLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "SentimentLambdaVersionyu0BqQ4wdGyh8U4n9nv2q5tybYwp4kn2aL0FJRec"
+        "Ref": "SentimentLambdaVersionIIz1FgBl5aoZrUNjudbFGRCROFSdQ2ymViyCHzYgI"
       }
     },
     "ServiceEndpoint": {

@@ -87,5 +87,6 @@ class Analytics {
             analyticsScheme.put(attribute, resultHolder);
             ++i;
         }
-        return analyticsScheme;}
+        return analyticsScheme;
+    }
 }

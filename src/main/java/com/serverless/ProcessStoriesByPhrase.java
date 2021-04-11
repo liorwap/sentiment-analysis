@@ -76,30 +76,29 @@ public class ProcessStoriesByPhrase implements RequestHandler<Map<String, Object
 			Map<String,String> quarryParameters =  (Map<String,String>) input.get("queryStringParameters");
 			String phrase = quarryParameters.get("phrase");
 			String decodedPhrase = URLDecoder.decode(phrase, StandardCharsets.UTF_8.toString());
-			LOG.info("decode request: {}", decodedPhrase);
-			LOG.info("start quering HackerNewsAPI..");
-
+			LOG.info("start quering HackerNewsAPI with phrase :{}", phrase);
 			List<Integer> topStoriesWithPhraseInTitle = HackerNewsAPI.asyncGetTopStoriesWithPhraseInTitle(decodedPhrase);
 			LOG.info("start analyze stories");
-			LOG.info("size of topstories: {}", topStoriesWithPhraseInTitle.size());
-			if(!topStoriesWithPhraseInTitle.isEmpty())
-				LOG.info("firststory: {}", topStoriesWithPhraseInTitle.get(0));
 			asyncAnalyzeStories(topStoriesWithPhraseInTitle);
 			LOG.info("finished analyze stories");
 
 
 		} catch (Exception ex){
 			LOG.error("error with path parameters: " + ex);
+			if(analyzer.alreadyAccumulatedResult()){
+				return ApiGatewayResponse.builder()
+						.setStatusCode(200)
+						.setRawBody(analyzer.getResults().toString())
+						.build();
+			} else {
+				return ApiGatewayResponse.builder()
+						.setStatusCode(416)
+						.build();
+			}
 		}
-		if(analyzer.alreadyAccumulatedResult()){
-			return ApiGatewayResponse.builder()
-					.setStatusCode(200)
-					.setRawBody(analyzer.getResults().toString())
-					.build();
-		} else {
-			return ApiGatewayResponse.builder()
-					.setStatusCode(416)
-					.build();
-		}
+		return ApiGatewayResponse.builder()
+				.setStatusCode(200)
+				.setRawBody(analyzer.getResults().toString())
+				.build();
 	}
 }
