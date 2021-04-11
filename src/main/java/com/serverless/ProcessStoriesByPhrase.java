@@ -21,7 +21,7 @@ public class ProcessStoriesByPhrase implements RequestHandler<Map<String, Object
 	private static final Analytics analyzer = new Analytics();
 	private static final ReentrantLock lock = new ReentrantLock();
 
-	private static void asyncAnalyzeAndTraverseStoryComments(JSONArray comments) throws UnirestException, InterruptedException {
+	private static void asyncAnalyzeAndTraverseStoryComments(JSONArray comments) throws UnirestException, InterruptedException, ExecutionException {
 		if(comments == null || comments.length() == 0) return;
 		List<String> commentsTexts = HackerNewsAPI.asyncGetCommentsTexts(comments);
 		List<SentimentAnalysisAPI.Analysis> sentimentsAnalytics = SentimentAnalysisAPI.asyncGetSentimentsAnalysis(commentsTexts);
@@ -35,37 +35,38 @@ public class ProcessStoriesByPhrase implements RequestHandler<Map<String, Object
 		}
 		//dfs
 		List<JSONArray> lowerLevelComments = HackerNewsAPI.asyncGetItemsComments(comments);
-		for(JSONArray moreComments : lowerLevelComments){
-			asyncAnalyzeAndTraverseStoryComments(moreComments);
-		}
+		parsingCommentsTasksMaker(lowerLevelComments);
 	}
-	static class Task implements Callable<String> {
+	static class parseComments implements Callable<String> {
 		JSONArray comments;
-		public Task(JSONArray comments) {
+		public parseComments(JSONArray comments) {
 			this.comments = comments;
 		}
 
 		@Override
-		public String call() throws InterruptedException, UnirestException {
+		public String call() throws InterruptedException, UnirestException, ExecutionException {
 			asyncAnalyzeAndTraverseStoryComments(comments);
 			return "done task of batched comments" + comments.toString();
 		}
 	}
-
-	private static void asyncAnalyzeStories(List<Integer> storiesToAnalyze) throws InterruptedException, ExecutionException {
-		List<JSONArray> commentsByStory = HackerNewsAPI.asyncGetItemsComments(storiesToAnalyze);
+	private static void parsingCommentsTasksMaker(List<JSONArray> commentsList) throws InterruptedException, ExecutionException {
 		ExecutorService service = Executors.newCachedThreadPool();
-		List<Callable<String>> parsingTasks = new ArrayList<>();
+		List<Callable<String>> parsingCommentsTasks = new ArrayList<>();
 		LOG.info("sending all parsing tasks to pool");
-		for(JSONArray comments : commentsByStory){
-			parsingTasks.add(new Task(comments));
+		for(JSONArray comments : commentsList){
+			parsingCommentsTasks.add(new parseComments(comments));
 		}
 		LOG.info("done sending all parsing tasks to pool, now invoking them");
-		List<Future<String>> results = service.invokeAll(parsingTasks);
+		List<Future<String>> results = service.invokeAll(parsingCommentsTasks);
+		service.shutdown();
 		LOG.info("done invoking all tasks");
 		for(Future<String> result: results){
 			LOG.info(result.get());
 		}
+	}
+	private static void asyncAnalyzeStories(List<Integer> storiesToAnalyze) throws InterruptedException, ExecutionException {
+		List<JSONArray> commentsByStory = HackerNewsAPI.asyncGetItemsComments(storiesToAnalyze);
+		parsingCommentsTasksMaker(commentsByStory);
 	}
 
 	@Override
